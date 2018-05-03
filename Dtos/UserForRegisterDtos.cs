@@ -7,7 +7,7 @@ namespace myDotnetApp.API.Dtos
         [Required]
         public string Username { get; set; }
         [Required]
-        [StringLength(8, MinimumLength=4 , ErrorMessage="Length Error")]
+        [StringLength(16, MinimumLength=8, ErrorMessage="Length Error")]
         public string Password { get; set; }
     }
 }
