@@ -25,7 +25,7 @@ namespace myDotnetApp.API.Controllers
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]UserForRegisterDtos userForRegisterDtos)
-        {
+        {     
             userForRegisterDtos.Username = userForRegisterDtos.Username.ToLower();
             if (await _repo.UserExists(userForRegisterDtos.Username))
             {
