@@ -26,7 +26,10 @@ namespace myDotnetApp.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]UserForRegisterDtos userForRegisterDtos)
         {     
-            userForRegisterDtos.Username = userForRegisterDtos.Username.ToLower();
+            if (!string.IsNullOrEmpty(userForRegisterDtos.Username))
+            {
+                userForRegisterDtos.Username = userForRegisterDtos.Username.ToLower();
+            }
             if (await _repo.UserExists(userForRegisterDtos.Username))
             {
                 ModelState.AddModelError("Username", "Username is Already taken");
@@ -48,7 +51,10 @@ namespace myDotnetApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]UserForLoginDtos userForLoginDtos)
         {
-            var userFromRepo = await _repo.Login(userForLoginDtos.Username.ToLower(), userForLoginDtos.Password);
+            if (!string.IsNullOrEmpty(userForLoginDtos.Username)){
+                userForLoginDtos.Username = userForLoginDtos.Username.ToLower();
+            }
+            var userFromRepo = await _repo.Login(userForLoginDtos.Username, userForLoginDtos.Password);
             if (userFromRepo == null)
             {
                 return Unauthorized();
