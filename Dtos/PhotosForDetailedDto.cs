@@ -2,7 +2,7 @@ using System;
 
 namespace myDotnetApp.API.Dtos
 {
-    public class PhotosForDetailedDtos
+    public class PhotosForDetailedDto
     {
         public int Id { get; set; }
         public string Url { get; set; }

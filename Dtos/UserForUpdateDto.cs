@@ -1,6 +1,6 @@
 namespace myDotnetApp.API.Dtos
 {
-    public class UserForUpdateDtos
+    public class UserForUpdateDto
     {
         public string Introduction { get; set; }
         public string LookingFor { get; set; }

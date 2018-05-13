@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace myDotnetApp.API.Dtos
 {
-    public class UserForRegisterDtos
+    public class UserForRegisterDto
     {
         [Required]
         public string Username { get; set; }

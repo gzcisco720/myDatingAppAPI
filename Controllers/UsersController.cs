@@ -26,18 +26,18 @@ namespace myDotnetApp.API.Controllers
         public async Task<IActionResult> GetUsers()
         {
             var users = await _repo.GetUsers();
-            var usersToReturn = _mapper.Map<IEnumerable<UserForListDtos>>(users);
+            var usersToReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
             return Ok(usersToReturn);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _repo.GetUser(id);
-            var userToReturn = _mapper.Map<UserForDetailedDtos>(user);
+            var userToReturn = _mapper.Map<UserForDetailedDto>(user);
             return Ok(userToReturn);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserForUpdateDtos userForUpdateDtos)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserForUpdateDto userForUpdateDto)
         {
             if (!ModelState.IsValid) 
             {
@@ -54,7 +54,7 @@ namespace myDotnetApp.API.Controllers
             {
                 return Unauthorized();
             }
-            _mapper.Map(userForUpdateDtos,userFromRepo);
+            _mapper.Map(userForUpdateDto,userFromRepo);
             if(await _repo.SaveAll())
             {
                 return NoContent();

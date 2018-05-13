@@ -24,13 +24,13 @@ namespace myDotnetApp.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody]UserForRegisterDtos userForRegisterDtos)
+        public async Task<IActionResult> Register([FromBody]UserForRegisterDto userForRegisterDto)
         {     
-            if (!string.IsNullOrEmpty(userForRegisterDtos.Username))
+            if (!string.IsNullOrEmpty(userForRegisterDto.Username))
             {
-                userForRegisterDtos.Username = userForRegisterDtos.Username.ToLower();
+                userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
             }
-            if (await _repo.UserExists(userForRegisterDtos.Username))
+            if (await _repo.UserExists(userForRegisterDto.Username))
             {
                 ModelState.AddModelError("Username", "Username is Already taken");
                 return BadRequest(ModelState);
@@ -41,20 +41,20 @@ namespace myDotnetApp.API.Controllers
             }
             var userToCreate = new User
             {
-                Username = userForRegisterDtos.Username
+                Username = userForRegisterDto.Username
             };
-            var createUser = await _repo.Register(userToCreate, userForRegisterDtos.Password);
+            var createUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
 
             return StatusCode(201);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]UserForLoginDtos userForLoginDtos)
+        public async Task<IActionResult> Login([FromBody]UserForLoginDto userForLoginDto)
         {
-            if (!string.IsNullOrEmpty(userForLoginDtos.Username)){
-                userForLoginDtos.Username = userForLoginDtos.Username.ToLower();
+            if (!string.IsNullOrEmpty(userForLoginDto.Username)){
+                userForLoginDto.Username = userForLoginDto.Username.ToLower();
             }
-            var userFromRepo = await _repo.Login(userForLoginDtos.Username, userForLoginDtos.Password);
+            var userFromRepo = await _repo.Login(userForLoginDto.Username, userForLoginDto.Password);
             if (userFromRepo == null)
             {
                 return Unauthorized();
