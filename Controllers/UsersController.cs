@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -33,6 +35,31 @@ namespace myDotnetApp.API.Controllers
             var user = await _repo.GetUser(id);
             var userToReturn = _mapper.Map<UserForDetailedDtos>(user);
             return Ok(userToReturn);
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserForUpdateDtos userForUpdateDtos)
+        {
+            if (!ModelState.IsValid) 
+            {
+                return BadRequest(ModelState);
+            }
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userFromRepo = await _repo.GetUser(id);
+
+            if(userFromRepo == null) 
+            {
+                return NotFound("Could not fount the User");
+            }
+            if(currentUserId != userFromRepo.Id)
+            {
+                return Unauthorized();
+            }
+            _mapper.Map(userForUpdateDtos,userFromRepo);
+            if(await _repo.SaveAll())
+            {
+                return NoContent();
+            }
+            throw new Exception("User Update Failed");
         }
     }
 }
