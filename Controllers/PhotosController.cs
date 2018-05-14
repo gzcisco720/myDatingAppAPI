@@ -87,11 +87,11 @@ namespace myDotnetApp.API.Controllers
             }
             user.Photos.Add(photo);
             
-            var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
+            // var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
 
             if(await _repo.SaveAll())
             {
-                // var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
+                var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
                 return CreatedAtRoute("GetPhoto",new {id = photo.Id}, photoToReturn);
             }
 
