@@ -70,7 +70,8 @@ namespace myDotnetApp.API.Controllers
                 {
                     var uploadParams = new ImageUploadParams()
                     {
-                        File = new FileDescription(file.Name, stream)
+                        File = new FileDescription(file.Name, stream),
+                        Transformation = new Transformation().Width(500).Height(500).Crop("fill").Gravity("face")
                     };
                     uploadResult = _cloudinary.Upload(uploadParams);
                 }
@@ -96,6 +97,35 @@ namespace myDotnetApp.API.Controllers
             }
 
             return BadRequest("Unknown Error");
+        }
+        [HttpPost("{id}/setMain")]
+        public async Task<IActionResult> SetMainPhoth(int userId, int id)
+        {
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if(currentUserId != userId)
+            {
+                return Unauthorized();
+            }
+            var photoFromRepo = await _repo.GetPhoto(id);
+            if (photoFromRepo == null)
+            {
+                return BadRequest("Photo is not found");
+            }
+            if (photoFromRepo.IsMain)
+            {
+                return BadRequest("Photo is already the main photo");
+            }
+            var currentMainPhoto = await _repo.GetMainPhoto(userId);
+            if(currentMainPhoto != null)
+            {
+                currentMainPhoto.IsMain = false;
+            }
+            photoFromRepo.IsMain = true;
+            if(await _repo.SaveAll())
+            {
+                return NoContent();
+            }
+            return BadRequest("Internal Server Error");
         }
     }
 }
