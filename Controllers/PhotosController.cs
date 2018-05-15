@@ -127,5 +127,43 @@ namespace myDotnetApp.API.Controllers
             }
             return BadRequest("Internal Server Error");
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId,int id)
+        {
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if(currentUserId != userId)
+            {
+                return Unauthorized();
+            }
+            var photoFromRepo = await _repo.GetPhoto(id);
+            if (photoFromRepo == null)
+            {
+                return BadRequest("Photo is not found");
+            }
+            if (photoFromRepo.IsMain)
+            {
+                return BadRequest("You cannot delete the Main Photo");
+            }
+            if(photoFromRepo.PublicId != null)
+            {
+                var deleteParams = new DeletionParams(photoFromRepo.PublicId);
+
+                var result = _cloudinary.Destroy(deleteParams);
+
+                if (result.Result == "ok")
+                {
+                    _repo.Delete(photoFromRepo);
+                }
+            }
+            else
+            {
+                _repo.Delete(photoFromRepo);
+            }
+            if (await _repo.SaveAll())
+            {
+                return Ok();
+            }
+            return BadRequest("Internal Server Error");
+        }
     }
 }
