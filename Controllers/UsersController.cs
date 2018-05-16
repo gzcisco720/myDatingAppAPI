@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using myDotnetApp.API.Data;
 using myDotnetApp.API.Dtos;
+using myDotnetApp.API.Helpers;
 
 namespace myDotnetApp.API.Controllers
 {
+    [ServiceFilter(typeof(LogUserActivity))]
     [Authorize]
     [Route("api/[controller]")]
     public class UsersController : Controller
