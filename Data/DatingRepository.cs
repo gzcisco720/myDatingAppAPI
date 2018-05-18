@@ -44,7 +44,14 @@ namespace myDotnetApp.API.Data
 
         public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = _context.Users.Include(p => p.Photos);
+            var users = _context.Users.Include(p => p.Photos).AsQueryable();
+
+            if (userParams.MinAge!=18 || userParams.MaxAge!=99)
+            {
+                users = users.Where(u => u.DateOfBirth.CalculateAge()>=userParams.MinAge&&u.DateOfBirth.CalculateAge()<=userParams.MaxAge);
+            }
+            users = users.Where(u => u.Id != userParams.UserId);
+            users = users.Where(u => u.Gender == userParams.Gender);
             return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 
