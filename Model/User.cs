@@ -21,7 +21,8 @@ namespace myDotnetApp.API.Model
        public string City { get; set; }
        public string Country { get; set; }
        public ICollection<Photo> Photos { get; set; }
-
+       public ICollection<Like> Liker { get; set; }
+       public ICollection<Like> Likee { get; set; }
        public User() {
            Photos = new Collection<Photo>();
        }

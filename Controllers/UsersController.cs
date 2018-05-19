@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using myDotnetApp.API.Data;
 using myDotnetApp.API.Dtos;
 using myDotnetApp.API.Helpers;
+using myDotnetApp.API.Model;
 
 namespace myDotnetApp.API.Controllers
 {
@@ -70,6 +71,35 @@ namespace myDotnetApp.API.Controllers
                 return NoContent();
             }
             throw new Exception("User Update Failed");
+        }
+        [HttpPost("{id}/like/{recipientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recipientId)
+        {
+           var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+           if (id != currentUserId)
+           {
+               return Unauthorized();
+           }
+           var like = await _repo.GetLike(id, recipientId);
+           if (like != null)
+           {
+               return BadRequest("You already like this user");
+           }
+           if (await _repo.GetUser(recipientId) == null)
+           {
+               return NotFound();
+           }
+           like = new Like
+           {
+               LikerId = id,
+               LikeeId = recipientId
+           };
+           _repo.Add<Like>(like);
+           if(await _repo.SaveAll())
+           {
+               return Ok();
+           }
+           return BadRequest("Internal Server Error");
         }
     }
 }
