@@ -15,5 +15,8 @@ namespace myDotnetApp.API.Data
         Task<Photo> GetPhoto(int id);
         Task<Photo> GetMainPhoto(int userId);
         Task<Like> GetLike(int userId, int recipientId);
+        Task<Message> GetMessage(int Id);
+        Task<PagedList<Message>> GetMessageForUser(); 
+        Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId);
     }
 }
