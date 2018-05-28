@@ -115,14 +115,37 @@ namespace myDotnetApp.API.Data
             return await _context.Messages.FirstOrDefaultAsync(m => m.Id == Id);
         }
 
-        public Task<PagedList<Message>> GetMessageForUser()
+        public async Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
         {
-            throw new System.NotImplementedException();
+            var messages = await _context.Messages
+            .Include(u => u.Sender).ThenInclude(p => p.Photos)
+            .Include(u => u.Sender).ThenInclude(p => p.Photos)
+            .Where(m => (m.RecipientId == userId && m.SenderId == recipientId) || (m.RecipientId == recipientId && m.SenderId == userId))
+            .OrderByDescending(m => m.MessageSend)
+            .ToListAsync();
+            return messages;
         }
 
-        public Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId)
+        public async Task<PagedList<Message>> GetMessageForUser(MessageParams messageParams)
         {
-            throw new System.NotImplementedException();
+            var messages = _context.Messages
+                        .Include(u => u.Sender).ThenInclude(p => p.Photos)
+                        .Include(u => u.Sender).ThenInclude(p => p.Photos)
+                        .AsQueryable();
+            switch(messageParams.MessageContainer)
+            {
+                case "Inbox":
+                    messages = messages.Where(u => u.RecipientId == messageParams.UserId);
+                    break;
+                case "Outbox":
+                    messages = messages.Where(u => u.SenderId == messageParams.UserId);
+                    break;
+                default:
+                    messages = messages.Where(u => u.RecipientId == messageParams.UserId);
+                    break;
+            }
+            messages = messages.OrderByDescending(d => d.MessageSend);
+            return await PagedList<Message>.CreateAsync(messages, messageParams.PageNumber, messageParams.PageSize);
         }
     }
 }

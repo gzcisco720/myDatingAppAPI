@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -37,6 +38,29 @@ namespace myDotnetApp.API.Controllers
                 return NotFound();
             }
             return Ok(messageFromRepo);
+        }
+        [HttpGet("thread/{id}")]
+        public async Task<IActionResult> GetMessageThread(int userId, int id)
+        {
+            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+            var messageFromRepo = await _repo.GetMessageThread(userId,id);
+            var messageThread = _map.Map<IEnumerable<MessageForReturnDto>>(messageFromRepo);
+            return Ok(messageThread);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMessageForUser (int userId, MessageParams messageParams)
+        {
+            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+            var messageFromRepo = await _repo.GetMessageForUser(messageParams);
+            var messages = _map.Map<IEnumerable<MessageForReturnDto>>(messageFromRepo);
+            Response.AddPagination(messageFromRepo.CurrentPage,messageFromRepo.PageSize,messageFromRepo.TotalCount,messageFromRepo.TotalPages);
+            return Ok(messages);
         }
         [HttpPost]
         public async Task<IActionResult> CreateMessage(int userId, [FromBody] MessageForCreationDto messageForCreateionDto)
