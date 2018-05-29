@@ -11,8 +11,8 @@ using System;
 namespace myDotnetApp.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20180527235104_MessageEntityAdded")]
-    partial class MessageEntityAdded
+    [Migration("20180529041548_AddedMessageEntity")]
+    partial class AddedMessageEntity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,6 +37,8 @@ namespace myDotnetApp.API.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Content");
 
                     b.Property<DateTime?>("DateRead");
 

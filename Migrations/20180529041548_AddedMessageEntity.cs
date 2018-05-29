@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace myDotnetApp.API.Migrations
 {
-    public partial class MessageEntityAdded : Migration
+    public partial class AddedMessageEntity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,6 +14,7 @@ namespace myDotnetApp.API.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    Content = table.Column<string>(nullable: true),
                     DateRead = table.Column<DateTime>(nullable: true),
                     IsRead = table.Column<bool>(nullable: false),
                     MessageSend = table.Column<DateTime>(nullable: false),

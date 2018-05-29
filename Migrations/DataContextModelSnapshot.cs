@@ -37,6 +37,8 @@ namespace myDotnetApp.API.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Content");
+
                     b.Property<DateTime?>("DateRead");
 
                     b.Property<bool>("IsRead");
