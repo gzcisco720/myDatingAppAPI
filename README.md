@@ -16,5 +16,5 @@ This app is created by Eric Zheng Gong with .NetCore 2.0 webapi and Angular 6.
 * Sqlite is used for Development, Please Change ConnectionString in appsetting.Development.json.
 * Mysql is used for Production, Please Change ConnectionString in appsetting.json.
 ## Run
-* Create Database: dotnet ef database update
-* Run API: dotnet run
+* Create Database: `dotnet ef database update`
+* Run API: `dotnet run`
