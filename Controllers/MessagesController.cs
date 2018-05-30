@@ -70,19 +70,65 @@ namespace myDotnetApp.API.Controllers
                 return Unauthorized();
             }
             messageForCreateionDto.SenderId = userId;
+
             var recipient = await _repo.GetUser(messageForCreateionDto.RecipientId);
+            var sender = await _repo.GetUser(messageForCreateionDto.SenderId);
+            
             if(recipient == null)
             {
                 return BadRequest("Could not find the user");
             }
             var message = _map.Map<Message>(messageForCreateionDto);
             _repo.Add(message);
-            var messageToReturn = _map.Map<MessageForCreationDto>(message);
+            var messageToReturn = _map.Map<MessageForReturnDto>(message);
             if(await _repo.SaveAll())
             {
-                return CreatedAtRoute("GetMessage", new { id = message.Id }, message);
+                return CreatedAtRoute("GetMessage", new { id = message.Id }, messageToReturn);
             }
             throw new Exception("Internal Server Error");
+        }
+        [HttpPost("{id}")]
+        public async Task<IActionResult> DeleteMessage(int id, int userId)
+        {
+            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+            var messageFromRepo = await _repo.GetMessage(id);
+            if (messageFromRepo.SenderId == userId)
+            {
+                messageFromRepo.SenderDeleted = true;
+            }
+            if (messageFromRepo.RecipientId == userId)
+            {
+                messageFromRepo.RecipientDeleted = true;
+            }
+            if(messageFromRepo.SenderDeleted && messageFromRepo.RecipientDeleted)
+            {
+                _repo.Delete(messageFromRepo);
+            }
+            if(await _repo.SaveAll())
+            {
+                return NoContent();
+            }
+            throw new Exception("Internal Server Error");
+        }
+        [HttpPost("{id}/read")]
+        public async Task<IActionResult> MarkMessageAsRead(int userId,int id)
+        {
+            if(userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+            var messageFromRepo = await _repo.GetMessage(id);
+            if(messageFromRepo.RecipientId != userId)
+            {
+                return BadRequest("Error");
+            }
+            messageFromRepo.IsRead = true;
+            messageFromRepo.DateRead = DateTime.Now;
+            await _repo.SaveAll();
+            return NoContent();
         }
     }
 }
